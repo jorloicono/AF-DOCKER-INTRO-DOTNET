@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi primer contenedor</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; margin: 0; min-height: 100vh;
+           display: grid; place-items: center; background: #0b3954; color: #fff; }
+    .tarjeta { background: #ffffff14; padding: 2.5rem 3rem; border-radius: 16px; max-width: 560px; }
+    h1 { margin-top: 0; }
+    code { background: #00000040; padding: 2px 6px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="tarjeta">
+    <h1>Hola desde un contenedor</h1>
+    <p>Esta página la sirve <code>nginx</code> dentro de una imagen que has construido tú con un <code>Dockerfile</code>.</p>
+    <p>Versión: <strong>v1</strong></p>
+  </div>
+</body>
+</html>

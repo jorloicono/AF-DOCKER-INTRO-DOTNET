@@ -1,0 +1,67 @@
+# Lab 09 — variante "de producción" del compose del lab 08 aplicando buenas prácticas.
+# Uso: docker compose -f compose.prod.yaml up -d
+# Requiere haber publicado la imagen en el registro local (localhost:5000) en el lab 09.
+
+name: convocatorias-prod
+
+services:
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest     # en un CPD real: fijar CU concreta o digest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"                              # en producción: la edición licenciada
+      MSSQL_SA_PASSWORD: "${SA_PASSWORD}"
+    volumes:
+      - sqldata:/var/opt/mssql
+    networks: [backend]                                   # sin puertos publicados: solo accesible desde la red interna
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' -b -o /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    restart: unless-stopped
+
+  api:
+    image: localhost:5000/convocatorias-api:1.0.0         # imagen versionada desde el registro, no "build"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__Convocatorias: "Server=db;Database=Convocatorias;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [backend, frontend]                         # sin "ports": solo el proxy la expone
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512m
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+
+  proxy:
+    image: nginx:alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on: [api]
+    networks: [frontend]
+    restart: unless-stopped
+
+volumes:
+  sqldata:
+
+networks:
+  backend:
+    internal: true                                        # la red de datos no tiene salida al exterior
+  frontend:

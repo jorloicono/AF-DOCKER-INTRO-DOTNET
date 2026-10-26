@@ -1,0 +1,30 @@
+# syntax=docker/dockerfile:1
+
+# ============================================================
+# Etapa 1 — build: compilamos con la imagen del SDK
+# ============================================================
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+# 1) Copiamos SOLO el .csproj y restauramos paquetes.
+#    Esta capa queda en caché mientras no cambien las dependencias.
+COPY ConvocatoriasApi.csproj ./
+RUN dotnet restore
+
+# 2) Copiamos el resto del código y publicamos.
+COPY . .
+RUN dotnet publish -c Release -o /app/publish --no-restore
+
+# ============================================================
+# Etapa 2 — runtime: solo lo necesario para ejecutar
+# ============================================================
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+
+# Las imágenes de .NET 8+ escuchan por defecto en el puerto 8080
+# e incluyen un usuario sin privilegios (app). Lo usamos.
+EXPOSE 8080
+USER $APP_UID
+
+ENTRYPOINT ["dotnet", "ConvocatoriasApi.dll"]

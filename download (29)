@@ -1,0 +1,9 @@
+# Artefactos de compilación
+**/bin/
+**/obj/
+# IDE
+.vs/
+.vscode/
+*.user
+# Ficheros generados en los labs
+*.tar

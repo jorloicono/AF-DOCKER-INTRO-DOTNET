@@ -1,0 +1,3 @@
+# Variables que Docker Compose sustituye en compose.yaml (${SA_PASSWORD}).
+# En un proyecto real este fichero NO se sube al repositorio (añádelo a .gitignore).
+SA_PASSWORD=Curso.Docker2026!

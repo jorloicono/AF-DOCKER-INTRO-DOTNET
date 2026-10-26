@@ -1,0 +1,28 @@
+# Lab 08 — completa este fichero siguiendo el enunciado (README.md).
+# Los bloques marcados con TODO son los que tienes que escribir tú.
+
+name: convocatorias
+
+services:
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: "${SA_PASSWORD}"
+    # TODO (paso 3): volumen con nombre "sqldata" montado en /var/opt/mssql
+    # TODO (paso 3): red "backend"
+    # TODO (paso 4): healthcheck
+
+  api:
+    build: ./ConvocatoriasApi
+    image: convocatorias-api:1.0.0
+    # TODO (paso 2): variables de entorno (Mensaje y ConnectionStrings__Convocatorias)
+    # TODO (paso 2): publicar el puerto 8080 del contenedor en el 8080 del equipo
+    # TODO (paso 4): depends_on con condition: service_healthy
+    # TODO (paso 3): redes "backend" y "frontend"
+
+  # TODO (paso 6, ampliación): servicio "proxy" con nginx:alpine
+
+# TODO (paso 3): declarar el volumen y las redes

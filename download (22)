@@ -1,0 +1,18 @@
+# Artefactos de compilación locales: se generan dentro del contenedor
+**/bin/
+**/obj/
+# Ficheros de IDE y del sistema
+**/.vs/
+**/.vscode/
+**/*.user
+**/.DS_Store
+# Ficheros de Docker y control de versiones
+**/Dockerfile*
+**/.dockerignore
+**/compose*.yaml
+**/.git
+**/.gitignore
+# Secretos y configuración local: nunca dentro de la imagen
+**/.env
+**/appsettings.*.local.json
+**/*.pfx
